@@ -1,0 +1,25 @@
+spring:
+  profiles:
+    active: local
+
+---
+ 
+spring:
+  profiles: local
+  application:
+    name: Sleuth Demo App
+
+server:
+  port: 5002
+  
+# Actuator endpoint management
+management:
+  endpoints:
+    web:
+      base-path: /manage
+      exposure:
+        include: shutdown,loggers,health,info,metrics
+  endpoint:
+    shutdown:
+      enabled: true
+      
