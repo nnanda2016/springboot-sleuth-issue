@@ -56,8 +56,8 @@ ext {
 	commons_codec_version = "1.11"
 	commons_collections4_version = "4.1"
 	commons_lang3_version = "3.7"
-    guava_version = "24.0-jre"
-	
+    guava_version = "25.1-jre"
+    
 	// Logging related
 	slf4j_version = "1.8.0-beta1"
 	log4j2_version = "2.10.0"
@@ -66,13 +66,11 @@ ext {
 	// For unit testing
 	testng_version = "6.14.2"
 	
-	spring_cloud_release_train_version = "Finchley.BUILD-SNAPSHOT"
-	//brave_release_train_version = "4.19.2"
+	spring_cloud_release_train_version = "Finchley.RELEASE"
 }
 
 dependencyManagement {
 	imports {
-		//mavenBom "io.zipkin.brave:brave-bom:${brave_release_train_version}"
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${spring_cloud_release_train_version}"
     }
 }
@@ -86,8 +84,6 @@ dependencies {
 	compile "org.springframework.boot:spring-boot-starter-log4j2"
 	compile "org.springframework.cloud:spring-cloud-starter-sleuth"
 	compile "org.springframework.cloud:spring-cloud-starter-zipkin"
-	
-	//compileOnly "org.springframework.boot:spring-boot-configuration-processor"
 	
 	compile "com.google.guava:guava:${guava_version}"
 	compile "commons-codec:commons-codec:${commons_codec_version}"

@@ -39,6 +39,7 @@ public class RouterConfigs {
 	private RouterFunction<ServerResponse> nestedBaseRoutes() {
 		return RouterFunctions
 				.route(getByIdPredicate(), userApiHandler::getById)
+				.andRoute(getByIdPredicate2(), userApiHandler::getById2)
 				.andRoute(getByIdsPredicate(), userApiHandler::getByIds)
 				;
 	}
@@ -48,6 +49,12 @@ public class RouterConfigs {
 		        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8))
 				;
 	}
+	
+	private RequestPredicate getByIdPredicate2() {
+        return RequestPredicates.GET("/users/ids/{id}")
+                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8))
+                ;
+    }
 	
 	private RequestPredicate getByIdsPredicate() {
         return RequestPredicates.GET("/user-list/*")

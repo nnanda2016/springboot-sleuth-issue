@@ -101,6 +101,29 @@ public class UserApiHandler {
                 ;
     }
     
+    @NewSpan(name="com.demo.springboot.sleuth.UserApiHandler#getById2")
+    public Mono<ServerResponse> getById2(final ServerRequest request) {
+        return Mono.subscriberContext()
+            .flatMap(context -> {
+                final String userId = request.pathVariables().get("id");
+                
+                logger.info("[NewSpan Annotation] Beans of type 'brave.Tracing': {}", applicationContext.getBeansOfType(Tracing.class));
+                
+                final TraceContext traceContext = Tracing.current().currentTraceContext().get();
+                logger.info("[NewSpan Annotation][TraceId: {}][SpanId: {}]", traceContext.traceId(), traceContext.spanId());
+                
+                return fetchUser(userId)
+                        .doOnError(t -> logger.info("[NewSpan Annotation] Exception while fetching user with id '{}'", userId, t))
+                        .doOnSuccess(user -> logger.info("[NewSpan Annotation] Successfully fetched user '{}'.", user))
+                        .flatMap(user -> ServerResponse
+                                .ok()
+                                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                                .body(BodyInserters.fromObject(user)).publishOn(Schedulers.newElastic("custom-thread")))
+                        ;
+            })
+        ;
+    }
+    
     @NewSpan(name="com.demo.springboot.sleuth.UserApiHandler#getByIds")
     public Mono<ServerResponse> getByIds(final ServerRequest request) {
         final String allUserIds = request.queryParam("ids")
@@ -126,6 +149,7 @@ public class UserApiHandler {
         final long spanStartTimestamp = System.currentTimeMillis();
         final Span newSpan = this.tracer.nextSpan().name("com.demo.springboot.sleuth.UserApiHandler#fetchUser");
         try (Tracer.SpanInScope spanInScope = this.tracer.withSpanInScope(newSpan.start())) {
+            logger.info("[Custom New Span] fetchUser was called with id '{}'", id);
             // Simulate exception
             if (StringUtils.equals(id, "U-1")) {
                 return Mono.error(new RuntimeException("Throwing RuntimeException"));
@@ -141,8 +165,7 @@ public class UserApiHandler {
             }
             
             return Mono.just(user)
-//                    .delaySubscription(Duration.ofMillis(1000))
-                    .doOnNext(u -> logger.info("[#fetchUser] Fetched a user --> {}", u));
+                    .doOnNext(u -> logger.info("[Custom New Span][#fetchUser] Fetched a user --> {}", u));
         } finally {
             newSpan.finish(TimeUnit.MICROSECONDS.convert(spanStartTimestamp, TimeUnit.MILLISECONDS));
         }
