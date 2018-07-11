@@ -18,3 +18,8 @@ curl -v http://localhost:5002/user-list/?ids=U1,U2
 ```
 curl -v http://localhost:5002/users/U-1
 ```
+
+**Testing `@NewSpan` issue with `Mono.subscriberContext()`**
+```
+curl -v http://localhost:5002/users/ids/U1
+```
